@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Model\Custormer;
+use App\Model\Customer;
 use Auth;
 
-class CustormerController extends Controller
+class CustomerController extends Controller
 {
+    
     public function view(){
 
-   	$allData = Custormer::all();
+   	$allData = Customer::all();
 
    	return view('backend.customer.view-customer', compact('allData'));
    }
@@ -22,7 +23,7 @@ class CustormerController extends Controller
    }
 
    public function store(Request $request){
-   	$customer = new Custormer();
+   	$customer = new Customer();
    	$customer->name = $request->name;
    	$customer->mobile_no = $request->mobile_no;
    	$customer->email = $request->email;
@@ -34,12 +35,12 @@ class CustormerController extends Controller
    }
 
    public function edit($id){
-   	$editData = Custormer::find($id);
+   	$editData = Customer::find($id);
    	return view('backend.customer.edit-customer', compact('editData'));
    }
 
    public function update(Request $request, $id){
-   	$customer = Custormer::find($id);
+   	$customer = Customer::find($id);
    	$customer->name = $request->name;
    	$customer->mobile_no = $request->mobile_no;
    	$customer->email = $request->email;
@@ -51,7 +52,7 @@ class CustormerController extends Controller
    }
 
    public function delete($id){
-   	$customer = Custormer::find($id);
+   	$customer = Customer::find($id);
    	$customer->delete();
 
    	return redirect()->route('customers.view')->with('success', 'Data deleted successfully');

@@ -60,12 +60,12 @@ Route::prefix('suppliers')->group(function(){
 });
 
 Route::prefix('customers')->group(function(){
-	route::get('/view', 'Backend\CustormerController@view')->name('customers.view');
-	route::get('/add', 'Backend\CustormerController@add')->name('customers.add');
-	route::post('/store', 'Backend\CustormerController@store')->name('customers.store');
-	route::get('/edit/{id}', 'Backend\CustormerController@edit')->name('customers.edit');
-	route::post('/update/{id}', 'Backend\CustormerController@update')->name('customers.update');
-	route::get('/delete/{id}', 'Backend\CustormerController@delete')->name('customers.delete');
+	route::get('/view', 'Backend\CustomerController@view')->name('customers.view');
+	route::get('/add', 'Backend\CustomerController@add')->name('customers.add');
+	route::post('/store', 'Backend\CustomerController@store')->name('customers.store');
+	route::get('/edit/{id}', 'Backend\CustomerController@edit')->name('customers.edit');
+	route::post('/update/{id}', 'Backend\CustomerController@update')->name('customers.update');
+	route::get('/delete/{id}', 'Backend\CustomerController@delete')->name('customers.delete');
 });
 
 Route::prefix('units')->group(function(){
