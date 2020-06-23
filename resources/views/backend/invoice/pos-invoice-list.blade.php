@@ -27,9 +27,9 @@
             <!-- Custom tabs (Charts with tabs)-->
             <div class="card">
               <div class="card-header">
-                <h3> Invoice Pending List
-                 <!--  
-                 <a class="btn btn-success float-right btn-sm" href="{{ route('invoice.add')}}"><i class="fa fa-plus-circle"></i>Add Invoice</a> -->
+                <h3> Invoice List
+                  
+                 <!-- <a class="btn btn-success float-right btn-sm" href="{{ route('invoice.add')}}"><i class="fa fa-plus-circle"></i>Add Invoice</a> -->
               
                 </h3>
               </div><!-- /.card-body -->
@@ -43,7 +43,6 @@
                   <th>Date</th>
                   <th>Description</th>
                   <th>Amount</th>
-                  <th>Status</th>
                   <th>Action</th>
                   
                 </tr>
@@ -66,19 +65,7 @@
                   <td>
                    {{$invoice['payment']['total_amount']}}
                   </td>
-                  <td>
-                    @if($invoice->status=='0')
-                    <span style="background: #FC4236;padding: 5px">Pending</span>
-                    @elseif($invoice->status=='1')
-                    <span style="background: #5EAB00;padding: 5px">Approved</span>
-                    @endif
-                  </td>
-                  
-                  <td>
-                    @if($invoice->status=='0')
-                    <a  href="{{ route('invoice.approve',$invoice->id)}}" id="approvedBtn" class="btn btn-sm btn-success" title="approve"><i class="fa fa-check-circle"></i></a>
-                    @endif
-                    <a href="{{ route('invoice.delete',$invoice->id)}}" id="delete" class="btn btn-sm btn-danger" title="delete"><i class="fa fa-trash"></i></a>
+                  <td><a  href="{{ route('invoice.print',$invoice->id)}}" class="btn btn-sm btn-success" title="print"><i class="fa fa-print"></i></a>
                   </td>
                 </tr>
                 @endforeach

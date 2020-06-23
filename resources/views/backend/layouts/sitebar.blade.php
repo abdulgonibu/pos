@@ -189,6 +189,49 @@
                 </a>
               </li>
             </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('invoice.print.list')}}" class="nav-link {{ ($route=='invoice.print.list')?'active':''}}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>print Invoice</p>
+                </a>
+              </li>
+            </ul>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('invoice.daily.report')}}" class="nav-link {{ ($route=='invoice.daily.report')?'active':''}}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Daily Invoice Report</p>
+                </a>
+              </li>
+            </ul>
+            </li>
+
+            <li class="nav-item has-treeview {{($prefix=='/invoice')?'menu-open':''}}">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+                Manage Stock
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('stock.report')}}" class="nav-link {{ ($route=='stock.report')?'active':''}}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Stock Report</p>
+                </a>
+              </li>
+            </ul>
+
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('stock.report.supplier.product.wise')}}" class="nav-link {{ ($route=='stock.report.supplier.product.wise')?'active':''}}">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Suppliar/Product Wise</p>
+                </a>
+              </li>
+            </ul>
             </li>
           </nav>
       <!-- /.sidebar-menu -->

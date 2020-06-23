@@ -118,6 +118,19 @@ Route::prefix('invoice')->group(function(){
 	route::get('/pending/', 'Backend\InvoiceController@pendingList')->name('invoice.pending.list');
 	route::get('/approve/{id}', 'Backend\InvoiceController@approve')->name('invoice.approve');
 	route::get('/delete/{id}', 'Backend\InvoiceController@delete')->name('invoice.delete');
+	Route::post('/approve/store/{id}', 'Backend\InvoiceController@approvalStore')->name('approval.store');
+	Route::get('/print/list','Backend\InvoiceController@printInvoicelist')->name('invoice.print.list');
+	Route::get('/print/{id}','Backend\InvoiceController@printInvoice')->name('invoice.print');
+	Route::get('/daily/report', 'Backend\InvoiceController@dailyReport')->name('invoice.daily.report');
+	Route::get('/daily/report/pdf', 'Backend\InvoiceController@dailyReportPdf')->name('invoice.daily.report.pdf');
+});
+
+Route::prefix('stock')->group(function(){
+	route::get('/report', 'Backend\StockController@stockReport')->name('stock.report');
+	route::get('/report/pdf', 'Backend\StockController@stockReportPdf')->name('stock.report.pdf');
+	route::get('/report/supplier/product/wise', 'Backend\StockController@stockReportsuppliarproductwise')->name('stock.report.supplier.product.wise');
+	route::get('/report/supplier/product/wise/pdf', 'Backend\StockController@stockReportsuppliarproductwisePdf')->name('stock.report.supplier.product.wise.pdf');
+	route::get('/report/product/wise/pdf', 'Backend\StockController@stockReportproductwisePdf')->name('stock.report.product.wise.pdf');
 });
 
 });

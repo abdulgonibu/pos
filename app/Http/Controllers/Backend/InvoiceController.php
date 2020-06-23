@@ -21,7 +21,7 @@ use App\Model\Customer;
 class InvoiceController extends Controller
 {
     public function view(){
-    	$allData = Invoice::orderBy('date','desc')->orderBy('id','desc')->get();
+    	$allData = Invoice::orderBy('date','desc')->orderBy('id','desc')->where('status','1')->get();
     	return view('backend.invoice.view-invoice',compact('allData'));
     }
 
@@ -42,6 +42,7 @@ class InvoiceController extends Controller
     }
 
     public function store(Request $request){
+
     	if($request->category_id == null){
     		return redirect()->back()->with('error', 'Sorry! you do not select any product');
     	}else{
@@ -71,6 +72,7 @@ class InvoiceController extends Controller
     					}
     					if($request->customer_id == '0'){
     						$customer = new Customer();
+    						$customer->name = $request->name;
     						$customer->mobile_no = $request->mobile_no;
     						$customer->address = $request->address;
     						$customer->save();
@@ -81,12 +83,12 @@ class InvoiceController extends Controller
 
     					$payment = new Payment();
     					$payment_details = new PaymentDetail();
-    					$payment->invoice_id = $invoice_id;
+    					$payment->invoice_id = $invoice->id;
     					$payment->customer_id = $customer_id;
     					$payment->paid_status = $request->paid_status;
     				    $payment->discount_amount = $request->discount_amount;
     				    $payment->total_amount = $request->estimated_amount;
-    				    if($request->paid->status =='full_paid'){
+    				    if($request->paid_status =='full_paid'){
     				    	$payment->paid_amount = $request->estimated_amount;
     				    	$payment->due_amount = '0';
     				    	$payment_details->current_paid_amount = $request->estimated_amount;
@@ -110,32 +112,86 @@ class InvoiceController extends Controller
     	}
        
 
-        return redirect()->route('purchase.view')->with('success','Data saved successfully');
+        return redirect()->route('invoice.pending.list')->with('success','Data saved successfully');
     }
 
     public function delete($id){
-        $purchase = Purchase::find($id);
-        $purchase->delete();
-        return redirect()->route('purchase.view')->with('success','Data deleted successfully');
+        $invoice = Invoice::find($id);
+        $invoice->delete();
+        InvoiceDetail::where('invoice_id',$invoice->id)->delete();
+        Payment::where('invoice_id', $invoice->id)->delete();
+        PaymentDetail::where('invoice_id', $invoice->id)->delete();
+        return redirect()->route('invoice.pending.list')->with('success','Data deleted successfully');
     }
 
     public function pendingList(){
-        $allData = Purchase::orderBy('date','desc')->orderBy('id','desc')->where('status','0')->get();
-        return view('backend.purchase.view-pending-list',compact('allData'));
+        $allData = Invoice::orderBy('date','desc')->orderBy('id','desc')->where('status','0')->get();
+        return view('backend.invoice.view-pending-list',compact('allData'));
     }
 
     public function approve($id){
-        $purchase = Purchase::find($id);
-        $product = Product::where('id',$purchase->product_id)->first();
-        $purchase_qty = ((float)($purchase->buying_qty))+((float)($product->quantity));
-        $product->quantity = $purchase_qty;
-        if($product->save()){
-            DB::table('purchases')
-                    ->where('id', $id)
-                    ->update(['status' => 1]);
+        $invoice = Invoice::with(['invoice_details'])->find($id);
+
+        return view('backend.invoice.invoice-approve', compact('invoice'));
+       
         }
-        return redirect()->route('purchase.pending.list')->with('success','Data approved successfully');
-    }
+
+        public function approvalStore(Request $request,$id){
+        	foreach($request->selling_qty as $key => $val){
+        		$invoice_details = InvoiceDetail::where('id', $key)->first();
+        		$product = Product::where('id', $invoice_details->product_id)->first();
+        		if($product->quantity < $request->selling_qty[$key]){
+        			return redirect()->back()->with('error', 'Sorry! You approve maximum value');
+        		}
+        	}
+
+        	$invoice = Invoice::find($id);
+        	$invoice->approved_by = Auth::user()->id;
+        	$invoice->status ='1';
+        	DB::transaction(function() use($request, $invoice, $id){
+                foreach($request->selling_qty as $key => $val){
+                	$invoice_details = InvoiceDetail::where('id',$key)->first();
+                    $invoice_details->status = '1';
+                    $invoice_details->save();
+                	$product = Product::where('id',$invoice_details->product_id)->first();
+                	$product->quantity = (( float) $product->quantity)-((float)$request->selling_qty[$key]);
+                	$product->save();
+                }
+                $invoice->save();
+        	});
+        	return redirect()->route('invoice.pending.list')->with('success', 'Invoice successfully approved');
+        }
+
+
+        public function printInvoicelist(){
+        	$allData = Invoice::orderBy('date','desc')->orderBy('id','desc')->where('status','1')->get();
+        	return view('backend.invoice.pos-invoice-list', compact('allData'));
+        }
+
+
+
+function printInvoice($id) {
+	$data['invoice'] = Invoice::with(['invoice_details'])->find($id);
+	$pdf = PDF::loadView('backend.pdf.invoice-pdf', $data);
+	$pdf->SetProtection(['copy', 'print'], '', 'pass');
+	return $pdf->stream('document.pdf');
+}
+
+
+ public function dailyReport(){
+ 	return view('backend.invoice.daily-invoice-report');
+ }       
+  
+  public function dailyReportPdf(Request $request){
+       $sdate = date('Y-m-d', strtotime($request->start_date));
+       $edate = date('Y-m-d', strtotime($request->end_date));
+       $data['allData'] = Invoice::whereBetween('date',[$sdate,$edate])->where('status','1')->get();
+       $data['start_date'] = date('Y-m-d', strtotime($request->start_date));
+       $data['end_date'] = date('Y-m-d', strtotime($request->end_date));
+       $pdf = PDF::loadView('backend.pdf.daily-invoice-report-pdf', $data);
+       $pdf->SetProtection(['copy', 'print'], '', 'pass');
+       return $pdf->stream('document.pfd');
+  }  
 
     public function purchaseReport(){
         return view('backend.purchase.daily-purchase-report');

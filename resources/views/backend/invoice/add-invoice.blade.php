@@ -29,7 +29,7 @@
             <div class="card">
               <div class="card-header">
                 <h3>Add Invoice
-                  <a class="btn btn-success float-right btn-sm" href="{{route('invoice.view')}}"><i class="fa fa-list"></i> Invoice List</a>
+                  <a class="btn btn-success float-right btn-sm" href="{{route('invoice.view')}}"><i class="fa fa-list"></i>Invoice List</a>
                 </h3>
               </div><!-- /.card-header -->
 
@@ -176,7 +176,7 @@
   <!-- Extra HTML for If exist Event -->
   <script id="document-template" type="text/x-handlebars-template">
     <tr class="delete_add_more_item" id="delete_add_more_item">
-      <input type="hidden" name="date[]" value="@{{date}}">
+      <input type="hidden" name="date" value="@{{date}}">
       <input type="hidden" name="invoice_no" value="@{{invoice_no}}">
       <td>
         <input type="hidden" name="category_id[]" value="@{{category_id}}">
